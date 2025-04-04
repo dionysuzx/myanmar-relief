@@ -135,9 +135,6 @@ export default function Demo({ title }: { title?: string } = { title: "Myanmar R
   const handleCustomButtonClick = () => {
     setIsCustom(true);
     setShowCustomField(true);
-    if (customAmount === "") {
-      setCustomAmount("0");
-    }
   };
 
   const handleCustomAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -230,15 +227,17 @@ export default function Demo({ title }: { title?: string } = { title: "Myanmar R
           </div>
         )}
 
-        <Button
-          onClick={handleDonation}
-          disabled={isSendTxPending || isConfirming}
-          isLoading={isSendTxPending || isConfirming}
-        >
-          {chainId !== base.id && isConnected
-            ? "Switch to Base"
-            : `Donate $${isCustom ? customAmount : selectedAmount} USDC`}
-        </Button>
+        {(!isCustom || (isCustom && customAmount && Number.parseFloat(customAmount) > 0)) && (
+          <Button
+            onClick={handleDonation}
+            disabled={isSendTxPending || isConfirming}
+            isLoading={isSendTxPending || isConfirming}
+          >
+            {chainId !== base.id && isConnected
+              ? "Switch to Base"
+              : `Donate $${isCustom ? customAmount : selectedAmount} USDC`}
+          </Button>
+        )}
         <div className="text-center mt-3">
           <button 
             type="button"
