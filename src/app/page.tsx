@@ -10,9 +10,9 @@ const iconUrl = `${appUrl}/icon.png`;
 
 const framePreviewMetadata = {
   version: "next",
-  imageUrl: `${appUrl}/opengraph-image`,
+  imageUrl: `${appUrl}/images/frame-preview.png`,
   button: {
-    title: process.env.NEXT_PUBLIC_FRAME_BUTTON_TEXT,
+    title: process.env.NEXT_PUBLIC_FRAME_BUTTON_TEXT || "🚀 Start",
     action: {
       type: "launch_frame",
       name: appName,
@@ -24,7 +24,8 @@ const framePreviewMetadata = {
   },
 };
 
-export const revalidate = 300;
+// No need for revalidate since we're using a static image
+export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
