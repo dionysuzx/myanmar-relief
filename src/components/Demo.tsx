@@ -15,7 +15,6 @@ import {
 } from "wagmi";
 import { config } from "~/components/providers/WagmiProvider";
 import { base } from "wagmi/chains";
-import { truncateAddress } from "~/lib/truncateAddress";
 import { parseUnits } from "viem";
 import { BaseError, UserRejectedRequestError } from "viem";
 import sdk from "@farcaster/frame-sdk";
@@ -257,18 +256,18 @@ export default function Demo({ title }: { title?: string } = { title: "Myanmar R
           <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-center">
             {isConfirmed ? (
               <>
-                <div className="text-green-600 dark:text-green-400 font-medium mb-1">Thank you for your donation!</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  Transaction: {truncateAddress(txHash)}
-                </div>
+                <div className="text-green-600 dark:text-green-400 font-medium mb-2">Thank you for your donation!</div>
+                <a 
+                  href={`https://basescan.org/tx/${txHash}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#7C65C1] hover:underline text-sm"
+                >
+                  View receipt on Basescan
+                </a>
               </>
             ) : (
-              <>
-                <div className="mb-1 text-black dark:text-white">Transaction in progress...</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  Hash: {truncateAddress(txHash)}
-                </div>
-              </>
+              <div className="mb-1 text-black dark:text-white">Transaction in progress...</div>
             )}
           </div>
         )}
