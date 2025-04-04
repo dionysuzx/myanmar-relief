@@ -25,7 +25,7 @@ const USDC_CONTRACT_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 // Donation recipient address
 const DONATION_ADDRESS = "0xa52820d251b38d6e3bd5739f4fd6fa32e7d125f3";
 // Learn more URL
-const LEARN_MORE_URL = "https://www.buddhistglobalrelief.org/myanmar-crisis";
+const LEARN_MORE_URL = "https://quake.myanmarblockchainrelief.org/";
 
 // Simple ERC20 ABI for transfer function
 const ERC20_ABI = [
@@ -44,7 +44,7 @@ const ERC20_ABI = [
 ];
 
 // Predefined donation amounts in USDC
-const DONATION_AMOUNTS = [1, 5, 10, 20];
+const DONATION_AMOUNTS = [5, 10, 20, 50];
 
 export default function Demo({ title }: { title?: string } = { title: "Myanmar Relief" }) {
   const { isSDKLoaded, context } = useFrame();
@@ -55,6 +55,7 @@ export default function Demo({ title }: { title?: string } = { title: "Myanmar R
   const [selectedAmount, setSelectedAmount] = useState(5); // Default 5 USDC
   const [customAmount, setCustomAmount] = useState("");
   const [isCustom, setIsCustom] = useState(false);
+  const [showCustomField, setShowCustomField] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
 
   const { 
@@ -129,11 +130,24 @@ export default function Demo({ title }: { title?: string } = { title: "Myanmar R
   const handleSelectAmount = (amount: number) => {
     setSelectedAmount(amount);
     setIsCustom(false);
+    setShowCustomField(false);
+  };
+  
+  const handleCustomButtonClick = () => {
+    setIsCustom(true);
+    setShowCustomField(true);
+    if (customAmount === "") {
+      setCustomAmount("0");
+    }
   };
 
   const handleCustomAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCustomAmount(e.target.value);
-    setIsCustom(true);
+    const value = e.target.value;
+    // Only allow numbers and one decimal point
+    if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
+      setCustomAmount(value);
+      setIsCustom(true);
+    }
   };
 
   if (!isSDKLoaded) {
@@ -152,7 +166,7 @@ export default function Demo({ title }: { title?: string } = { title: "Myanmar R
       <div className="w-[300px] mx-auto py-4 px-4">
         <h1 className="text-2xl font-bold text-center mb-4 text-black dark:text-white">{title}</h1>
         <p className="text-center mb-6 text-black dark:text-gray-300" style={{ color: 'inherit' }}>
-          Support Myanmar with a USDC donation on Base
+          Support Myanmar with a USDC donation on Base 💜
         </p>
 
         <div className="mb-6">
@@ -172,25 +186,43 @@ export default function Demo({ title }: { title?: string } = { title: "Myanmar R
               </button>
             ))}
           </div>
-
-          <div className="mb-4">
-            <Label htmlFor="custom-amount" className="text-sm font-medium text-black dark:text-white">
-              Custom Amount (USDC)
-            </Label>
-            <div className="relative mt-1">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-black dark:text-white">$</span>
-              <Input
-                id="custom-amount"
-                type="number"
-                step="0.01"
-                min="0.01"
-                placeholder="Enter amount"
-                value={customAmount}
-                onChange={handleCustomAmount}
-                className="pl-7"
-              />
-            </div>
+          
+          <div className="grid grid-cols-1 gap-2 mb-4">
+            <button
+              onClick={handleCustomButtonClick}
+              className={`p-2 rounded-lg border ${
+                isCustom
+                  ? "bg-[#7C65C1] text-white border-[#7C65C1]"
+                  : "bg-white border-gray-300 hover:border-[#7C65C1] text-black"
+              }`}
+              type="button"
+            >
+              Custom Amount
+            </button>
           </div>
+
+          {showCustomField && (
+            <div className="mb-4">
+              <Label htmlFor="custom-amount" className="text-sm font-medium text-black dark:text-white">
+                Custom Amount (USDC)
+              </Label>
+              <div className="relative mt-1">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-black dark:text-white">$</span>
+                <Input
+                  id="custom-amount"
+                  type="text"
+                  inputMode="decimal"
+                  pattern="^[0-9]+(\.[0-9]{1,2})?$"
+                  min="0.01"
+                  placeholder="Enter amount"
+                  value={customAmount}
+                  onChange={handleCustomAmount}
+                  className="pl-7"
+                  autoFocus
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {chainId !== base.id && isConnected && (
@@ -206,7 +238,7 @@ export default function Demo({ title }: { title?: string } = { title: "Myanmar R
         >
           {chainId !== base.id && isConnected
             ? "Switch to Base"
-            : `Donate ${isCustom ? `$${customAmount}` : `$${selectedAmount}`} USDC`}
+            : `Donate $${isCustom ? customAmount : selectedAmount} USDC`}
         </Button>
         <div className="text-center mt-3">
           <button 
